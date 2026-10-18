@@ -150,17 +150,34 @@ with col_g4:
 # 7. Fila 3: Mapa Geográfico
 st.subheader("🗺️ Distribución Geográfica en Municipios de Antioquia")
 
-# Agrupar datos por municipio
-map_data = df_filtrado.groupby(['ciudad_municipio_nom', 'lat', 'lon']).size().reset_index(name='Casos')
+# 7. Fila 3: Mapa Geográfico
+st.subheader("🗺️ Distribución Geográfica en Municipios de Antioquia")
 
-# Asegurar que las coordenadas sean numéricas
-map_data['lat'] = pd.to_numeric(map_data['lat'], errors='coerce')
-map_data['lon'] = pd.to_numeric(map_data['lon'], errors='coerce')
+# Diccionario con coordenadas de municipios de Antioquia
+coords_antioquia = {
+    'MEDELLIN': (6.2442, -75.5812),
+    'BELLO': (6.3373, -75.5579),
+    'ITAGUI': (6.1846, -75.5991),
+    'ENVIGADO': (6.1699, -75.5878),
+    'RIONEGRO': (6.1552, -75.3737),
+    'APARTADO': (7.8829, -76.6258),
+    'TURBO': (8.0926, -76.7281),
+    'SABANETA': (6.1513, -75.6163),
+    'CAUCASIA': (7.9868, -75.1979),
+    'CALDAS': (6.0911, -75.6357)
+}
 
-# Filtrar solo registros con coordenadas válidas y casos > 0
-map_data = map_data.dropna(subset=['lat', 'lon'])
+# 1. Agrupar por municipio primero
+map_data = df_filtrado.groupby('ciudad_municipio_nom').size().reset_index(name='Casos')
+
+# 2. Asignar latitud y longitud según el municipio
+map_data['lat'] = map_data['ciudad_municipio_nom'].map(lambda x: coords_antioquia.get(str(x).upper(), (6.2442, -75.5812))[0])
+map_data['lon'] = map_data['ciudad_municipio_nom'].map(lambda x: coords_antioquia.get(str(x).upper(), (6.2442, -75.5812))[1])
+
+# 3. Filtrar registros válidos
 map_data = map_data[map_data['Casos'] > 0]
 
+# 4. Renderizar el mapa
 if not map_data.empty:
     fig_map = px.scatter_map(
         map_data, 
