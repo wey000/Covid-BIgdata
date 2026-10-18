@@ -161,8 +161,8 @@ coords = {
 
 df_mapa['lat'] = df_mapa['Municipio'].map(lambda x: coords[x][0] if x in coords else 6.2442)
 df_mapa['lon'] = df_mapa['Municipio'].map(lambda x: coords[x][1] if x in coords else -75.5812)
-
+# CÓDIGO CON ERROR:
 fig_map = px.scatter_mapbox(df_mapa, lat="lat", lon="lon", size="Casos", color="Casos",
-                            hover_name="Municipio", zoom=6.5, mapbox_style="carto-positron",
-                            title="Mapa de Concentración de Casos en Antioquia")
-st.plotly_chart(fig_map, use_container_width=True)
+                            hover_name="ciudad_municipio_nom", size_max=40, zoom=7,
+                            mapbox_style="carto-positron",
+                            title="Concentración de Casos por Municipio")
