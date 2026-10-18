@@ -123,6 +123,8 @@ with row2_col1:
                              title="Dispersión: Edad vs. Días hasta el Diagnóstico",
                              labels={'edad': 'Edad del Paciente', 'dias_hasta_diagnostico': 'Días hasta Diagnóstico'})
     st.plotly_chart(fig_scatter, use_container_width=True)
+# 6. Fila 2 de Gráficos: Línea de Tiempo y Dispersión
+col_g3, col_g4 = st.columns(2)
 
 with col_g3:
     st.subheader("📈 Evolución Temporal de Contagios")
@@ -134,8 +136,14 @@ with col_g3:
                            markers=True, line_shape='spline')
         st.plotly_chart(fig_line, use_container_width=True)
 
-st.markdown("---")
-
+with col_g4:
+    st.subheader("🔍 Edad vs. Días Hasta Diagnóstico")
+    if 'dias_hasta_diagnostico' in df_filtrado.columns:
+        fig_scatter = px.scatter(df_filtrado.dropna(subset=['edad', 'dias_hasta_diagnostico']), 
+                                 x='edad', y='dias_hasta_diagnostico', 
+                                 color='sexo', opacity=0.6,
+                                 title="Relación Edad y Tiempo de Diagnóstico (Días)")
+        st.plotly_chart(fig_scatter, use_container_width=True)
 # ==========================================
 # 5. MAPA GEOGRÁFICO DE ANTIOQUIA
 # ==========================================
