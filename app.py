@@ -147,23 +147,33 @@ with col_g4:
 # ==========================================
 # 5. MAPA GEOGRÁFICO DE ANTIOQUIA
 # ==========================================
-st.subheader("5. Distribución Geográfica en Municipios de Antioquia")
-df_mapa = df_filtrado['ciudad_municipio_nom'].value_counts().reset_index()
-df_mapa.columns = ['Municipio', 'Casos']
+# 7. Fila 3: Mapa Geográfico
+st.subheader("🗺️ Distribución Geográfica en Municipios de Antioquia")
 
-# Coordenadas aproximadas para los principales municipios de Antioquia
-coords = {
-    'MEDELLIN': [6.2442, -75.5812], 'ITAGUI': [6.1846, -75.5991], 'ENVIGADO': [6.1759, -75.5917],
-    'BELLO': [6.3373, -75.5579], 'RIONEGRO': [6.1552, -75.3737], 'APARTADO': [7.8829, -76.6258],
-    'TURBO': [8.0926, -76.7282], 'CAUCASIA': [7.9865, -75.1977], 'SABANETA': [6.1515, -75.6165],
-    'CALDAS': [6.0911, -75.6357]
-}
+# Agrupar datos por municipio
+map_data = df_filtrado.groupby(['ciudad_municipio_nom', 'lat', 'lon']).size().reset_index(name='Casos')
 
-df_mapa['lat'] = df_mapa['Municipio'].map(lambda x: coords[x][0] if x in coords else 6.2442)
-df_mapa['lon'] = df_mapa['Municipio'].map(lambda x: coords[x][1] if x in coords else -75.5812)
-# CÓDIGO CON ERROR:
-# CÓDIGO CORREGIDO:
-fig_map = px.scatter_map(df_mapa, lat="lat", lon="lon", size="Casos", color="Casos",
-                         hover_name="ciudad_municipio_nom", size_max=40, zoom=7,
-                         map_style="carto-positron",
-                         title="Concentración de Casos por Municipio")
+# Asegurar que las coordenadas sean numéricas
+map_data['lat'] = pd.to_numeric(map_data['lat'], errors='coerce')
+map_data['lon'] = pd.to_numeric(map_data['lon'], errors='coerce')
+
+# Filtrar solo registros con coordenadas válidas y casos > 0
+map_data = map_data.dropna(subset=['lat', 'lon'])
+map_data = map_data[map_data['Casos'] > 0]
+
+if not map_data.empty:
+    fig_map = px.scatter_map(
+        map_data, 
+        lat="lat", 
+        lon="lon", 
+        size="Casos", 
+        color="Casos",
+        hover_name="ciudad_municipio_nom", 
+        size_max=35, 
+        zoom=6.5,
+        map_style="open-street-map",
+        title="Concentración de Casos por Municipio"
+    )
+    st.plotly_chart(fig_map, use_container_width=True)
+else:
+    st.info("No hay datos geográficos disponibles para los filtros seleccionados.")
