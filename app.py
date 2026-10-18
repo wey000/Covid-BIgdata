@@ -57,7 +57,8 @@ sexos = ["TODOS"] + sorted(list(df_raw['sexo'].unique()))
 sexo_sel = st.sidebar.selectbox("Seleccione Sexo:", sexos)
 
 # Filtro Estado
-estados = ["TODOS"] + sorted(list(df_raw['estado'].unique()))
+
+estados = ["TODOS"] + sorted(list(df_raw['estado'].dropna().astype(str).unique()))
 estado_sel = st.sidebar.selectbox("Seleccione Estado/Atención:", estados)
 
 # Aplicación de Filtros
