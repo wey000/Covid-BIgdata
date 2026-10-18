@@ -124,13 +124,13 @@ with row2_col1:
                              labels={'edad': 'Edad del Paciente', 'dias_hasta_diagnostico': 'Días hasta Diagnóstico'})
     st.plotly_chart(fig_scatter, use_container_width=True)
 
-with row2_col2:
-    st.subheader("4. Evolución Temporal de Contagios")
+with col_g3:
+    st.subheader("📈 Evolución Temporal de Contagios")
     if 'fecha_reporte_web' in df_filtrado.columns:
-        
-df_tiempo = df_filtrado.set_index('fecha_reporte_web').resample('ME').size().reset_index(name='Casos')
-        fig_line = px.line(df_tiempo, x='fecha_reporte_web', y='Casos',
-                           title="Casos Confirmados por Mes",
+        df_temp = df_filtrado.dropna(subset=['fecha_reporte_web'])
+        df_tiempo = df_temp.set_index('fecha_reporte_web').resample('ME').size().reset_index(name='Casos')
+        fig_line = px.line(df_tiempo, x='fecha_reporte_web', y='Casos', 
+                           title="Casos Diagnosticados por Mes",
                            markers=True, line_shape='spline')
         st.plotly_chart(fig_line, use_container_width=True)
 
