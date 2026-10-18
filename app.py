@@ -151,9 +151,9 @@ with col_g4:
 st.subheader("🗺️ Distribución Geográfica en Municipios de Antioquia")
 
 # 7. Fila 3: Mapa Geográfico
+# 7. Fila 3: Mapa Geográfico
 st.subheader("🗺️ Distribución Geográfica en Municipios de Antioquia")
 
-# Diccionario con coordenadas de municipios de Antioquia
 coords_antioquia = {
     'MEDELLIN': (6.2442, -75.5812),
     'BELLO': (6.3373, -75.5579),
@@ -167,30 +167,13 @@ coords_antioquia = {
     'CALDAS': (6.0911, -75.6357)
 }
 
-# 1. Agrupar por municipio primero
 map_data = df_filtrado.groupby('ciudad_municipio_nom').size().reset_index(name='Casos')
+map_data['latitude'] = map_data['ciudad_municipio_nom'].map(lambda x: coords_antioquia.get(str(x).upper(), (6.2442, -75.5812))[0])
+map_data['longitude'] = map_data['ciudad_municipio_nom'].map(lambda x: coords_antioquia.get(str(x).upper(), (6.2442, -75.5812))[1])
 
-# 2. Asignar latitud y longitud según el municipio
-map_data['lat'] = map_data['ciudad_municipio_nom'].map(lambda x: coords_antioquia.get(str(x).upper(), (6.2442, -75.5812))[0])
-map_data['lon'] = map_data['ciudad_municipio_nom'].map(lambda x: coords_antioquia.get(str(x).upper(), (6.2442, -75.5812))[1])
-
-# 3. Filtrar registros válidos
 map_data = map_data[map_data['Casos'] > 0]
 
-# 4. Renderizar el mapa
 if not map_data.empty:
-    fig_map = px.scatter_map(
-        map_data, 
-        lat="lat", 
-        lon="lon", 
-        size="Casos", 
-        color="Casos",
-        hover_name="ciudad_municipio_nom", 
-        size_max=35, 
-        zoom=6.5,
-        map_style="open-street-map",
-        title="Concentración de Casos por Municipio"
-    )
-    st.plotly_chart(fig_map, use_container_width=True)
+    st.map(map_data, latitude='latitude', longitude='longitude', size='Casos', color='#FF4B4B')
 else:
     st.info("No hay datos geográficos disponibles para los filtros seleccionados.")
