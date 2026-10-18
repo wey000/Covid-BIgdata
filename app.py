@@ -127,7 +127,8 @@ with row2_col1:
 with row2_col2:
     st.subheader("4. Evolución Temporal de Contagios")
     if 'fecha_reporte_web' in df_filtrado.columns:
-        df_tiempo = df_filtrado.set_index('fecha_reporte_web').resample('M').size().reset_index(name='Casos')
+        
+df_tiempo = df_filtrado.set_index('fecha_reporte_web').resample('ME').size().reset_index(name='Casos')
         fig_line = px.line(df_tiempo, x='fecha_reporte_web', y='Casos',
                            title="Casos Confirmados por Mes",
                            markers=True, line_shape='spline')
